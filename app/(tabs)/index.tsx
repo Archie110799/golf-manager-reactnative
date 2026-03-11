@@ -1,98 +1,181 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
+import { Link } from 'expo-router';
+import { StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
+import { ScreenContainer } from '@/components/layout';
+import { Button } from '@/components/ui';
+import { CardLayout } from '@/components/layout';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { useAuthStore } from '@/stores/authStore';
+import { DashboardAPI } from '@/services/api';
+import { Spacing } from '@/config/theme';
 
-export default function HomeScreen() {
+function formatMonth(month: string): string {
+  const [y, m] = month.split('-');
+  const d = new Date(parseInt(y, 10), parseInt(m, 10) - 1);
+  return d.toLocaleDateString('vi-VN', { month: 'short', year: '2-digit' });
+}
+
+export default function DashboardScreen() {
+  const { user, isAuthenticated } = useAuthStore();
+  const isAdmin = user?.role === 'admin';
+
+  const { data: stats, isLoading: loadingStats } = useQuery({
+    queryKey: ['dashboard', 'stats'],
+    queryFn: async () => {
+      const res = await DashboardAPI.getStats();
+      return res.data;
+    },
+    enabled: isAuthenticated && isAdmin,
+  });
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <ScreenContainer>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <ThemedView style={styles.header}>
+          <ThemedText type="title">Dashboard</ThemedText>
+          <ThemedText style={styles.subtitle}>
+            Golf Manager – Quản lý sân & đặt chỗ
+          </ThemedText>
+        </ThemedView>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        {!isAuthenticated ? (
+          <ThemedView style={styles.section}>
+            <CardLayout>
+              <ThemedText style={styles.muted}>
+                Đăng nhập để đặt sân hoặc quản lý (admin).
+              </ThemedText>
+              <Link href="/(auth)/login" asChild>
+                <Button title="Đăng nhập" style={styles.cta} />
+              </Link>
+            </CardLayout>
+          </ThemedView>
+        ) : isAdmin ? (
+          <>
+            <ThemedView style={styles.section}>
+              <ThemedText type="subtitle" style={styles.sectionTitle}>
+                Xin chào, {user?.fullName} (Admin)
+              </ThemedText>
+            </ThemedView>
+            {loadingStats ? (
+              <ActivityIndicator size="large" style={styles.loader} />
+            ) : stats ? (
+              <>
+                <ThemedView style={styles.statsGrid}>
+                  <CardLayout style={styles.statCard}>
+                    <ThemedText style={styles.statValue}>{stats.visitors}</ThemedText>
+                    <ThemedText style={styles.statLabel}>Lượt truy cập</ThemedText>
+                  </CardLayout>
+                  <CardLayout style={styles.statCard}>
+                    <ThemedText style={styles.statValue}>{stats.coursesCount}</ThemedText>
+                    <ThemedText style={styles.statLabel}>Số sân</ThemedText>
+                  </CardLayout>
+                  <CardLayout style={styles.statCard}>
+                    <ThemedText style={styles.statValue}>{stats.bookingsCount}</ThemedText>
+                    <ThemedText style={styles.statLabel}>Đặt sân</ThemedText>
+                  </CardLayout>
+                  <CardLayout style={styles.statCard}>
+                    <ThemedText style={styles.statValue}>{stats.videosCount}</ThemedText>
+                    <ThemedText style={styles.statLabel}>Video</ThemedText>
+                  </CardLayout>
+                  <CardLayout style={styles.statCard}>
+                    <ThemedText style={styles.statValue}>{stats.postsCount}</ThemedText>
+                    <ThemedText style={styles.statLabel}>Bài đăng</ThemedText>
+                  </CardLayout>
+                </ThemedView>
+                <ThemedView style={styles.section}>
+                  <ThemedText type="subtitle" style={styles.sectionTitle}>
+                    Doanh thu theo tháng
+                  </ThemedText>
+                  <CardLayout>
+                    {stats.revenueByMonth.length === 0 ? (
+                      <ThemedText style={styles.muted}>Chưa có dữ liệu</ThemedText>
+                    ) : (
+                      stats.revenueByMonth.map((r, i) => (
+                        <ThemedView
+                          key={r.month}
+                          style={[
+                            styles.revenueRow,
+                            i < stats.revenueByMonth.length - 1 && styles.revenueRowBorder,
+                          ]}
+                        >
+                          <ThemedText>{formatMonth(r.month)}</ThemedText>
+                          <ThemedText type="defaultSemiBold">
+                            {r.revenue.toLocaleString('vi-VN')} ₫
+                          </ThemedText>
+                        </ThemedView>
+                      ))
+                    )}
+                  </CardLayout>
+                </ThemedView>
+              </>
+            ) : null}
+          </>
+        ) : (
+          <ThemedView style={styles.section}>
+            <ThemedText type="subtitle" style={styles.welcome}>
+              Xin chào, {user?.fullName}
+            </ThemedText>
+            <CardLayout>
+              <ThemedText style={styles.muted}>
+                Đặt sân nhanh hoặc xem thông tin cá nhân.
+              </ThemedText>
+              <Link href="/(tabs)/booking" asChild>
+                <Button title="Đặt sân" style={styles.cta} />
+              </Link>
+              <Link href="/(tabs)/profile" asChild>
+                <Button title="Cá nhân" variant="outline" style={styles.ctaOutline} />
+              </Link>
+            </CardLayout>
+          </ThemedView>
+        )}
+      </ScrollView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  scroll: { flex: 1 },
+  scrollContent: { padding: Spacing.lg, paddingBottom: Spacing.xl },
+  header: { marginBottom: Spacing.lg },
+  subtitle: { marginTop: 4, opacity: 0.8 },
+  section: { marginBottom: Spacing.lg },
+  sectionTitle: { marginBottom: Spacing.sm },
+  welcome: { marginBottom: Spacing.sm },
+  muted: { opacity: 0.8, marginBottom: Spacing.sm },
+  cta: { marginTop: 8 },
+  ctaOutline: { marginTop: 8 },
+  loader: { marginVertical: Spacing.xl },
+  statsGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: Spacing.lg,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  statCard: {
+    minWidth: '47%',
+    flexGrow: 1,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  statValue: {
+    fontSize: 28,
+    fontWeight: '700',
+  },
+  statLabel: {
+    fontSize: 13,
+    opacity: 0.8,
+    marginTop: 4,
+  },
+  revenueRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+  },
+  revenueRowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,0.06)',
   },
 });
