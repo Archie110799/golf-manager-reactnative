@@ -1,3 +1,7 @@
+/**
+ * View nền theo theme — primitive bố cục (shadcn thường dùng className; RN dùng token).
+ */
+
 import { View, type ViewProps } from 'react-native';
 
 import { useThemeColor } from '@/hooks/use-theme-color';

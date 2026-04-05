@@ -1,5 +1,5 @@
 /**
- * Button – Green theme (DESIGN_REACTNATIVE.md §4.4)
+ * Button — API theo shadcn/ui (variant + size), theme xanh lá (DESIGN_REACTNATIVE.md).
  */
 
 import { BorderRadius, Spacing } from '@/config/theme';
@@ -12,18 +12,35 @@ import {
   type ViewProps,
 } from 'react-native';
 
+export type ButtonVariant =
+  | 'default'
+  | 'destructive'
+  | 'outline'
+  | 'secondary'
+  | 'ghost';
+
+export type ButtonSize = 'default' | 'sm' | 'lg';
+
 export type ButtonProps = ViewProps & {
   title: string;
   onPress?: () => void;
-  variant?: 'primary' | 'outline' | 'ghost';
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   disabled?: boolean;
   loading?: boolean;
+};
+
+const sizeStyles: Record<ButtonSize, { minHeight: number; padV: number; padH: number; font: number }> = {
+  sm: { minHeight: 40, padV: Spacing.sm, padH: Spacing.md, font: 14 },
+  default: { minHeight: 48, padV: Spacing.md, padH: Spacing.lg, font: 16 },
+  lg: { minHeight: 52, padV: Spacing.md, padH: Spacing.xl, font: 16 },
 };
 
 export function Button({
   title,
   onPress,
-  variant = 'primary',
+  variant = 'default',
+  size = 'default',
   disabled = false,
   loading = false,
   style,
@@ -32,9 +49,35 @@ export function Button({
   const primary = useThemeColor({}, 'primary');
   const text = useThemeColor({}, 'text');
   const surface = useThemeColor({}, 'surface');
+  const border = useThemeColor({}, 'border');
+  const destructive = useThemeColor({}, 'error');
 
-  const isPrimary = variant === 'primary';
+  const sz = sizeStyles[size];
+  const isDefault = variant === 'default';
+  const isDestructive = variant === 'destructive';
   const isOutline = variant === 'outline';
+  const isSecondary = variant === 'secondary';
+  const isGhost = variant === 'ghost';
+
+  const bgColor = isDefault
+    ? primary
+    : isDestructive
+      ? destructive
+      : isSecondary
+        ? surface
+        : 'transparent';
+
+  const textColor = isDefault || isDestructive
+    ? surface
+    : isOutline
+      ? primary
+      : isSecondary
+        ? primary
+        : isGhost
+          ? text
+          : text;
+
+  const showSpinnerOnPrimary = isDefault || isDestructive;
 
   return (
     <Pressable
@@ -42,13 +85,23 @@ export function Button({
       disabled={disabled || loading}
       style={({ pressed }) => [
         styles.base,
-        isPrimary && { backgroundColor: primary },
+        {
+          minHeight: sz.minHeight,
+          paddingVertical: sz.padV,
+          paddingHorizontal: sz.padH,
+          borderRadius: BorderRadius.md,
+          backgroundColor: bgColor,
+        },
         isOutline && {
           backgroundColor: 'transparent',
           borderWidth: 2,
           borderColor: primary,
         },
-        variant === 'ghost' && { backgroundColor: 'transparent' },
+        isSecondary && {
+          borderWidth: 1,
+          borderColor: border,
+        },
+        isGhost && { backgroundColor: 'transparent' },
         (disabled || loading) && styles.disabled,
         pressed && styles.pressed,
         style,
@@ -56,17 +109,9 @@ export function Button({
       {...props}
     >
       {loading ? (
-        <ActivityIndicator color={isPrimary ? surface : primary} />
+        <ActivityIndicator color={showSpinnerOnPrimary ? surface : primary} />
       ) : (
-        <Text
-          style={[
-            styles.text,
-            { color: isPrimary ? surface : primary },
-            variant === 'ghost' && { color: text },
-          ]}
-        >
-          {title}
-        </Text>
+        <Text style={[styles.text, { fontSize: sz.font, color: textColor }]}>{title}</Text>
       )}
     </Pressable>
   );
@@ -74,15 +119,10 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    borderRadius: BorderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 48,
   },
   text: {
-    fontSize: 16,
     fontWeight: '600',
   },
   disabled: {

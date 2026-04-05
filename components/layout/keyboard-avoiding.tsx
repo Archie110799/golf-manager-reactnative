@@ -1,5 +1,5 @@
 /**
- * Keyboard avoiding (DESIGN_REACTNATIVE.md §4.2)
+ * KeyboardAvoidingView wrapper — shell layout.
  */
 
 import {

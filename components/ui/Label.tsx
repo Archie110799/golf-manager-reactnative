@@ -1,5 +1,5 @@
 /**
- * Label (DESIGN_REACTNATIVE.md §4.4 – Atomic)
+ * Label — shadcn-style (variant default / error / secondary).
  */
 
 import { Spacing } from '@/config/theme';

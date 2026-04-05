@@ -1,19 +1,16 @@
-/**
- * Login form – RHF + Zod (DESIGN_REACTNATIVE.md §6.1)
- */
-
-import { CardLayout, KeyboardAvoidingWrapper } from '@/components/layout';
-import { Button, TextField } from '@/components/ui';
+import { Button, Input } from '@/components/ui';
 import { Spacing } from '@/config/theme';
 import { AuthAPI } from '@/services/api';
 import { useAuthStore } from '@/stores/authStore';
 import { loginSchema, type LoginInput } from '@/validations/auth';
+import { AuthFormShell } from './AuthFormShell';
+import { AuthLinkRow } from './AuthLinkRow';
+import { getAuthErrorMessage } from './authError';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
-import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
 
 export function LoginForm() {
@@ -45,11 +42,11 @@ export function LoginForm() {
       Toast.show({ type: 'success', text1: 'Đăng nhập thành công' });
       router.replace('/(tabs)');
     },
-    onError: (err: { response?: { data?: { message?: string } } }) => {
+    onError: (err) => {
       Toast.show({
         type: 'error',
         text1: 'Đăng nhập thất bại',
-        text2: err.response?.data?.message ?? 'Vui lòng thử lại',
+        text2: getAuthErrorMessage(err, 'Vui lòng thử lại'),
       });
     },
   });
@@ -57,59 +54,64 @@ export function LoginForm() {
   const onSubmit = handleSubmit((data) => loginMutation.mutate(data));
 
   return (
-    <KeyboardAvoidingWrapper>
-      <View style={styles.container}>
-        <CardLayout style={styles.card}>
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { value, onChange, onBlur } }) => (
-              <TextField
-                label="Email"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                error={errors.email?.message}
-              />
-            )}
+    <AuthFormShell
+      title="Đăng nhập"
+      description="Truy cập tài khoản để đặt sân và theo dõi lịch sử chơi golf."
+      footer={
+        <>
+          <AuthLinkRow
+            label="Chưa có tài khoản?"
+            linkLabel="Đăng ký"
+            href="/(auth)/register"
           />
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { value, onChange, onBlur } }) => (
-              <TextField
-                label="Mật khẩu"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                secureTextEntry
-                error={errors.password?.message}
-              />
-            )}
+          <AuthLinkRow
+            label="Quên mật khẩu?"
+            linkLabel="Khôi phục ngay"
+            href="/(auth)/forgot-password"
           />
-          <Button
-            title="Đăng nhập"
-            onPress={onSubmit}
-            loading={loginMutation.isPending}
-            style={styles.button}
+        </>
+      }
+    >
+      <Controller
+        control={control}
+        name="email"
+        render={({ field: { value, onChange, onBlur } }) => (
+          <Input
+            label="Email"
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            error={errors.email?.message}
           />
-        </CardLayout>
-      </View>
-    </KeyboardAvoidingWrapper>
+        )}
+      />
+      <Controller
+        control={control}
+        name="password"
+        render={({ field: { value, onChange, onBlur } }) => (
+          <Input
+            label="Mật khẩu"
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+            secureTextEntry
+            error={errors.password?.message}
+          />
+        )}
+      />
+      <Button
+        title="Đăng nhập"
+        onPress={onSubmit}
+        loading={loginMutation.isPending}
+        style={styles.button}
+      />
+    </AuthFormShell>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: Spacing.lg,
-  },
-  card: {
-    padding: Spacing.lg,
-  },
   button: {
     marginTop: Spacing.md,
   },

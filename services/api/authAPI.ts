@@ -16,6 +16,12 @@ export type AuthResponse = {
   accessToken: string;
   refreshToken: string;
 };
+export type ForgotPasswordPayload = { email: string };
+export type ForgotPasswordResponse = { message: string };
+export type RefreshTokenResponse = {
+  accessToken: string;
+  refreshToken: string;
+};
 
 export const AuthAPI = {
   login: (data: LoginPayload) =>
@@ -24,9 +30,9 @@ export const AuthAPI = {
   register: (data: RegisterPayload) =>
     apiClient.post<AuthResponse>('/auth/register', data),
 
-  forgotPassword: (email: string) =>
-    apiClient.post('/auth/forgot-password', { email }),
+  forgotPassword: (data: ForgotPasswordPayload) =>
+    apiClient.post<ForgotPasswordResponse>('/auth/forgot-password', data),
 
   refresh: (refreshToken: string) =>
-    apiClient.post<{ accessToken: string }>('/auth/refresh', { refreshToken }),
+    apiClient.post<RefreshTokenResponse>('/auth/refresh', { refreshToken }),
 };

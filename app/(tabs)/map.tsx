@@ -1,10 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { ScreenContainer } from '@/components/layout';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { Card, IconSymbol, ThemedText, ThemedView } from '@/components/ui';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { CardLayout } from '@/components/layout';
 import { Spacing } from '@/config/theme';
 
 export default function MapScreen() {
@@ -19,12 +16,12 @@ export default function MapScreen() {
             Bản đồ sân
           </ThemedText>
         </ThemedView>
-        <CardLayout style={styles.card}>
+        <Card style={styles.card}>
           <ThemedText type="defaultSemiBold">Tính năng sắp có</ThemedText>
           <ThemedText style={styles.muted}>
             Định vị sân, điều hướng hole, tracking khoảng cách (Mapbox) sẽ được tích hợp khi có API/dữ liệu bản đồ.
           </ThemedText>
-        </CardLayout>
+        </Card>
       </ThemedView>
     </ScreenContainer>
   );

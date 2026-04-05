@@ -30,11 +30,15 @@ apiClient.interceptors.response.use(
       const refreshToken = useAuthStore.getState().refreshToken;
       if (refreshToken) {
         try {
-          const { data } = await axios.post<{ accessToken: string }>(
+          const { data } = await axios.post<{
+            accessToken: string;
+            refreshToken: string;
+          }>(
             `${APP_CONFIG.API_BASE_URL}/auth/refresh`,
             { refreshToken }
           );
           useAuthStore.getState().setToken(data.accessToken);
+          useAuthStore.getState().setRefreshToken(data.refreshToken);
           if (originalRequest.headers) {
             originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
           }

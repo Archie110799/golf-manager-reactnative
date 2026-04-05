@@ -2,10 +2,7 @@ import { Link } from 'expo-router';
 import { StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { ScreenContainer } from '@/components/layout';
-import { Button } from '@/components/ui';
-import { CardLayout } from '@/components/layout';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { Button, Card, ThemedText, ThemedView } from '@/components/ui';
 import { useAuthStore } from '@/stores/authStore';
 import { DashboardAPI } from '@/services/api';
 import { Spacing } from '@/config/theme';
@@ -45,14 +42,14 @@ export default function DashboardScreen() {
 
         {!isAuthenticated ? (
           <ThemedView style={styles.section}>
-            <CardLayout>
+            <Card>
               <ThemedText style={styles.muted}>
                 Đăng nhập để đặt sân hoặc quản lý (admin).
               </ThemedText>
               <Link href="/(auth)/login" asChild>
                 <Button title="Đăng nhập" style={styles.cta} />
               </Link>
-            </CardLayout>
+            </Card>
           </ThemedView>
         ) : isAdmin ? (
           <>
@@ -66,32 +63,32 @@ export default function DashboardScreen() {
             ) : stats ? (
               <>
                 <ThemedView style={styles.statsGrid}>
-                  <CardLayout style={styles.statCard}>
+                  <Card style={styles.statCard}>
                     <ThemedText style={styles.statValue}>{stats.visitors}</ThemedText>
                     <ThemedText style={styles.statLabel}>Lượt truy cập</ThemedText>
-                  </CardLayout>
-                  <CardLayout style={styles.statCard}>
+                  </Card>
+                  <Card style={styles.statCard}>
                     <ThemedText style={styles.statValue}>{stats.coursesCount}</ThemedText>
                     <ThemedText style={styles.statLabel}>Số sân</ThemedText>
-                  </CardLayout>
-                  <CardLayout style={styles.statCard}>
+                  </Card>
+                  <Card style={styles.statCard}>
                     <ThemedText style={styles.statValue}>{stats.bookingsCount}</ThemedText>
                     <ThemedText style={styles.statLabel}>Đặt sân</ThemedText>
-                  </CardLayout>
-                  <CardLayout style={styles.statCard}>
+                  </Card>
+                  <Card style={styles.statCard}>
                     <ThemedText style={styles.statValue}>{stats.videosCount}</ThemedText>
                     <ThemedText style={styles.statLabel}>Video</ThemedText>
-                  </CardLayout>
-                  <CardLayout style={styles.statCard}>
+                  </Card>
+                  <Card style={styles.statCard}>
                     <ThemedText style={styles.statValue}>{stats.postsCount}</ThemedText>
                     <ThemedText style={styles.statLabel}>Bài đăng</ThemedText>
-                  </CardLayout>
+                  </Card>
                 </ThemedView>
                 <ThemedView style={styles.section}>
                   <ThemedText type="subtitle" style={styles.sectionTitle}>
                     Doanh thu theo tháng
                   </ThemedText>
-                  <CardLayout>
+                  <Card>
                     {stats.revenueByMonth.length === 0 ? (
                       <ThemedText style={styles.muted}>Chưa có dữ liệu</ThemedText>
                     ) : (
@@ -110,7 +107,7 @@ export default function DashboardScreen() {
                         </ThemedView>
                       ))
                     )}
-                  </CardLayout>
+                  </Card>
                 </ThemedView>
               </>
             ) : null}
@@ -120,7 +117,7 @@ export default function DashboardScreen() {
             <ThemedText type="subtitle" style={styles.welcome}>
               Xin chào, {user?.fullName}
             </ThemedText>
-            <CardLayout>
+            <Card>
               <ThemedText style={styles.muted}>
                 Đặt sân nhanh hoặc xem thông tin cá nhân.
               </ThemedText>
@@ -130,7 +127,7 @@ export default function DashboardScreen() {
               <Link href="/(tabs)/profile" asChild>
                 <Button title="Cá nhân" variant="outline" style={styles.ctaOutline} />
               </Link>
-            </CardLayout>
+            </Card>
           </ThemedView>
         )}
       </ScrollView>

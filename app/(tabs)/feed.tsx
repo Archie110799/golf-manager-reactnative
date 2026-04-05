@@ -1,8 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { ScreenContainer } from '@/components/layout';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { IconSymbol, ThemedText, ThemedView } from '@/components/ui';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { Spacing } from '@/config/theme';
 

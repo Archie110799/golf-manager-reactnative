@@ -1,5 +1,5 @@
 /**
- * Screen wrapper + SafeArea (DESIGN_REACTNATIVE.md §4.2)
+ * Screen + SafeArea — shell layout (không thuộc shadcn primitives).
  */
 
 import { useThemeColor } from '@/hooks/use-theme-color';

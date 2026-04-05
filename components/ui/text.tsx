@@ -1,3 +1,7 @@
+/**
+ * Typography có theme — vai trò tương đương shadcn typography (variant qua `type`).
+ */
+
 import { StyleSheet, Text, type TextProps } from 'react-native';
 
 import { useThemeColor } from '@/hooks/use-theme-color';

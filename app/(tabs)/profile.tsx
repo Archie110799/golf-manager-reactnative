@@ -1,10 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { FlatList, StyleSheet } from 'react-native';
 import { ScreenContainer } from '@/components/layout';
-import { Button } from '@/components/ui';
-import { CardLayout } from '@/components/layout';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { Button, Card, ThemedText, ThemedView } from '@/components/ui';
 import { useAuthStore } from '@/stores/authStore';
 import { BookingAPI } from '@/services/api';
 import { useRouter } from 'expo-router';
@@ -39,12 +36,13 @@ export default function ProfileScreen() {
       <FlatList
         data={[1]}
         keyExtractor={() => 'profile'}
+        renderItem={() => null}
         ListHeaderComponent={
           <>
             <ThemedView style={styles.header}>
               <ThemedText type="title">Cá nhân</ThemedText>
               {isAuthenticated && user ? (
-                <CardLayout style={styles.userCard}>
+                <Card style={styles.userCard}>
                   <ThemedText type="subtitle">{user.fullName}</ThemedText>
                   <ThemedText style={styles.email}>{user.email}</ThemedText>
                   <Button
@@ -56,9 +54,9 @@ export default function ProfileScreen() {
                     }}
                     style={styles.logoutBtn}
                   />
-                </CardLayout>
+                </Card>
               ) : (
-                <CardLayout style={styles.userCard}>
+                <Card style={styles.userCard}>
                   <ThemedText style={styles.muted}>
                     Đăng nhập để xem thông tin và đặt sân.
                   </ThemedText>
@@ -67,7 +65,7 @@ export default function ProfileScreen() {
                     onPress={() => router.push('/(auth)/login')}
                     style={styles.loginBtn}
                   />
-                </CardLayout>
+                </Card>
               )}
             </ThemedView>
 
@@ -77,7 +75,7 @@ export default function ProfileScreen() {
                 {loadingBookings ? (
                   <ThemedText style={styles.muted}>Đang tải...</ThemedText>
                 ) : confirmedBookings.length === 0 ? (
-                  <CardLayout>
+                  <Card>
                     <ThemedText style={styles.muted}>Chưa có đặt chỗ nào</ThemedText>
                     <Button
                       title="Đặt sân"
@@ -85,17 +83,17 @@ export default function ProfileScreen() {
                       onPress={() => router.push('/(tabs)/booking')}
                       style={styles.bookingCta}
                     />
-                  </CardLayout>
+                  </Card>
                 ) : (
                   confirmedBookings.map((b) => (
-                    <CardLayout key={b.id} style={styles.bookingCard}>
+                    <Card key={b.id} style={styles.bookingCard}>
                       <ThemedText type="defaultSemiBold">
                         {b.course?.name ?? 'Sân'}
                       </ThemedText>
                       <ThemedText style={styles.muted}>
                         {formatDate(b.date)} • {b.slot?.startTime}–{b.slot?.endTime}
                       </ThemedText>
-                    </CardLayout>
+                    </Card>
                   ))
                 )}
               </ThemedView>

@@ -7,10 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { ScreenContainer } from '@/components/layout';
-import { Button } from '@/components/ui';
-import { CardLayout } from '@/components/layout';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { Button, Card, ThemedText, ThemedView } from '@/components/ui';
 import { useAuthStore } from '@/stores/authStore';
 import { BookingAPI, CoursesAPI } from '@/services/api';
 import { useRouter } from 'expo-router';
@@ -103,6 +100,7 @@ export default function BookingScreen() {
       <FlatList
         data={[1]}
         keyExtractor={() => 'main'}
+        renderItem={() => null}
         ListHeaderComponent={
           <>
             <ThemedView style={styles.section}>
@@ -202,7 +200,7 @@ export default function BookingScreen() {
 
             {selectedCourseId && selectedSlotId && (
               <ThemedView style={styles.section}>
-                <CardLayout>
+                <Card>
                   <ThemedText>
                     {selectedCourse?.name} • {formatDate(selectedDate)} •{' '}
                     {selectedSlot?.startTime}–{selectedSlot?.endTime}
@@ -222,7 +220,7 @@ export default function BookingScreen() {
                       style={styles.confirmBtn}
                     />
                   )}
-                </CardLayout>
+                </Card>
               </ThemedView>
             )}
 
@@ -243,7 +241,7 @@ export default function BookingScreen() {
                   }>)
                     .filter((b) => b.status === 'confirmed')
                     .map((b) => (
-                      <CardLayout key={b.id} style={styles.bookingCard}>
+                      <Card key={b.id} style={styles.bookingCard}>
                         <ThemedText type="defaultSemiBold">
                           {b.course?.name ?? 'Sân'}
                         </ThemedText>
@@ -256,7 +254,7 @@ export default function BookingScreen() {
                           onPress={() => cancelMutation.mutate(b.id)}
                           style={styles.cancelBtn}
                         />
-                      </CardLayout>
+                      </Card>
                     ))
                 )}
               </ThemedView>

@@ -1,21 +1,21 @@
 /**
- * Card layout – Flat, rounded, shadow (DESIGN_REACTNATIVE.md §4.2)
+ * Card — container có viền + đổ bóng nhẹ (shadcn Card).
  */
 
 import { BorderRadius, Spacing } from '@/config/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { Platform, StyleSheet, View, type ViewProps } from 'react-native';
 
-export type CardLayoutProps = ViewProps & {
+export type CardProps = ViewProps & {
   padded?: boolean;
 };
 
-export function CardLayout({
+export function Card({
   style,
   padded = true,
   children,
   ...props
-}: CardLayoutProps) {
+}: CardProps) {
   const backgroundColor = useThemeColor({}, 'surface');
   const borderColor = useThemeColor({}, 'border');
 

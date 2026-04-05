@@ -1,5 +1,5 @@
 /**
- * TextField (DESIGN_REACTNATIVE.md §4.4 – Atomic)
+ * Input — tương đương shadcn Input (+ Label / thông báo lỗi).
  */
 
 import { BorderRadius, Spacing } from '@/config/theme';
@@ -10,14 +10,15 @@ import {
   View,
   type TextInputProps,
 } from 'react-native';
-import { Label } from './Label';
 
-export type TextFieldProps = TextInputProps & {
+import { Label } from './label';
+
+export type InputProps = TextInputProps & {
   label?: string;
   error?: string;
 };
 
-export function TextField({ label, error, style, ...props }: TextFieldProps) {
+export function Input({ label, error, style, ...props }: InputProps) {
   const borderColor = useThemeColor({}, error ? 'error' : 'border');
   const textColor = useThemeColor({}, 'text');
   const surface = useThemeColor({}, 'surface');
@@ -47,6 +48,10 @@ export function TextField({ label, error, style, ...props }: TextFieldProps) {
     </View>
   );
 }
+
+/** @deprecated Dùng `Input` — giữ tạm để migrate import cũ. */
+export const TextField = Input;
+export type TextFieldProps = InputProps;
 
 const styles = StyleSheet.create({
   wrapper: {

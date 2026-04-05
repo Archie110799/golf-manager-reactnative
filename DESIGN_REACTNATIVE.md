@@ -21,6 +21,7 @@ Tài liệu thiết kế chức năng (High Level + Technical Design) cho ứng 
 | Layer | Technology |
 |-------|------------|
 | **UI & Styling** | React Native, NativeWind (TailwindCSS) / Styled Components |
+| **Shared UI (tham chiếu thiết kế)** | **shadcn/ui** — nguyên tắc component, variant, token và accessibility làm chuẩn cho `components/ui` |
 | **State** | Zustand |
 | **API Request** | REST API + Axios (Modularized) |
 | **Data Fetching** | React Query |
@@ -93,9 +94,12 @@ golf-manager/
 │
 ├── config/                        # env.ts (API_BASE_URL, WS_URL), theme.ts (Spacing, BorderRadius)
 ├── providers/                     # QueryProvider, AppProviders (Toast)
-├── components/                    # UI dùng chung (Shared UI)
-│   ├── ui/                        # Atomic: Button, TextField, Label, Icon, Collapsible…
-│   └── layout/                    # ScreenContainer, KeyboardAvoidingWrapper, CardLayout
+├── components/                    # UI dùng chung — shadcn/ui (file kebab-case trong ui/)
+│   ├── ui/                        # button, input, label, card, text, view, collapsible, icon-symbol…
+│   ├── layout/                    # screen-container, keyboard-avoiding (vỏ màn hình)
+│   ├── navigation/              # haptic-tab (tab bar)
+│   ├── patterns/                # parallax-scroll-view, hello-wave (mẫu / demo)
+│   └── links/                   # external-link
 │
 ├── features/                      # Khối tính năng (logic, form, màn con)
 │   ├── auth/                      # LoginForm, RegisterForm…
@@ -146,16 +150,17 @@ golf-manager/
 
 ### 4.2. Cấu trúc Layout (Layout Structure)
 - Bố cục 100% linh hoạt dựa vào hệ thống `Flexbox` của Yoga Layout.
-- Sử dụng các layout wrapper chuẩn: `ScreenContainer` (tích hợp SafeAreaView), `KeyboardAvoidingWrapper` (xử lý bàn phím đè UI), `CardLayout` (cho danh sách dạng thẻ).
+- Sử dụng các layout wrapper chuẩn: `ScreenContainer` (tích hợp SafeAreaView), `KeyboardAvoidingWrapper` (xử lý bàn phím đè UI); thẻ nội dung dùng `Card` trong `components/ui`.
 - Thiết kế thích ứng mượt mà qua các Breakpoints: màn hẹp (Mobile), màn trung bình (Tablet), màn rộng (Web). (Hỗ trợ theo `% Width` hoặc cơ chế Grid của Tailwind).
 
 ### 4.3. Quản lý Styling
 - Sử dụng **NativeWind** (TailwindCSS cho React Native) hoặc **Styled Components**.
 - Tạo sẵn các Utility-first class giúp đồng bộ UI giữa các nền tảng dễ dàng, cấu trúc mã CSS gọn gàng, ít lặp lại.
 
-### 4.4. UI Component Architecture
-- Áp dụng **Atomic Design**: Khai báo và gom nhóm mọi element nhỏ nhất (`TextField`, `CustomButton`, `Label`, `IconBox`) tại thư mục `components/ui`.
-- Bất kỳ màn hình phức tạp nào cũng phải lắp ghép (compose) từ các UI Component này để đảm bảo 100% tính đồng nhất.
+### 4.4. UI Component Architecture & Shared UI (shadcn/ui)
+- **UI dùng chung (Shared UI)** được thiết kế dựa trên **[shadcn/ui](https://ui.shadcn.com/)**: cùng triết lý component có thể compose, API theo **variant** (class-variance-authority / tương đương), tách **primitive** và **styled layer**, và chú trọng accessibility — giữ đồng bộ với hệ sinh thái Tailwind/NativeWind đã chọn.
+- Trên **Web (React Native Web)** có thể tái sử dụng hoặc song song các block shadcn khi phù hợp; trên **iOS/Android** triển khai các component tương đương trong `components/ui` (React Native primitives + NativeWind) nhưng **bám tên, cấu trúc thư mục và hành vi** theo shadcn để team chỉ cần một “nguồn sự thật” về UI.
+- Áp dụng **Atomic Design**: mọi element nhỏ nhất (`Button`, `Input`, `Label`, `Card`, `Dialog`, `Icon`…) nằm tại `components/ui` và được lắp ghép (compose) cho màn hình — không nhân bản style ad-hoc ngoài hệ thống.
 
 ---
 
